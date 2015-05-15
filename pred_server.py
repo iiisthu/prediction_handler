@@ -22,7 +22,6 @@ class PredictionHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
              + "| ./predict myModel/ 0 | awk '{print $20}' > " + result_path)
         os.chdir(CURRENT_PATH)
 
- 
     def do_GET(self):
         """Serve a GET request."""
         #print self.path
@@ -31,7 +30,11 @@ class PredictionHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         print query_components
         
         result_path = CURRENT_PATH + '/prediciton_result.txt'
-        self.predict(query_components['data'], result_path)
+        try:
+            self.predict(query_components['data'], result_path)
+        except:
+            self.send_error(417, "The format of input data is incorrect")
+            return None
         f = self.send_file(result_path)
         if f:
             try:
